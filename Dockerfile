@@ -13,9 +13,33 @@ RUN apt-get update && apt-get install -y \
 
 RUN git clone https://github.com/PasarGuard/panel.git .
 
-# نصب پکیج‌های پیش‌فرض مورد نیاز (در صورت عدم وجود requirements.txt)
 RUN pip install --no-cache-dir fastapi uvicorn gunicorn requests
+
+# ایجاد فایل کانفیگ Nginx با پشتیبانی از مسیر /admin
+RUN echo 'server { \
+    listen 80; \
+    server_name _; \
+    \
+    location /admin { \
+        proxy_pass http://127.0.0.1:8000; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
+        proxy_set_header X-Forwarded-Proto $scheme; \
+        proxy_http_version 1.1; \
+        proxy_set_header Upgrade $http_upgrade; \
+        proxy_set_header Connection "upgrade"; \
+    } \
+    \
+    location / { \
+        proxy_pass http://127.0.0.1:8000; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
+        proxy_set_header X-Forwarded-Proto $scheme; \
+    } \
+}' > /etc/nginx/sites-available/default
 
 EXPOSE 80
 
-CMD ["bash"]
+CMD service nginx start && gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 127.0.0.1:8000
