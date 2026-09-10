@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
-# نصب وابستگی‌های سیستمی و Nginx
+WORKDIR /app
+
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -10,20 +11,11 @@ RUN apt-get update && apt-get install -y \
     gettext-base \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-
-# کلون کردن مخزن رسمی پاسارگارد
 RUN git clone https://github.com/PasarGuard/panel.git .
 
-# نصب پکیج‌های پایتون
-RUN pip install --no-cache-dir -r requirements.txt
+# نصب پکیج‌های پیش‌فرض مورد نیاز (در صورت عدم وجود requirements.txt)
+RUN pip install --no-cache-dir fastapi uvicorn gunicorn requests
 
-# کپی کردن کانفیگ با نام صحیح موجود در مخزن
-COPY nginix.conf.template /etc/nginx/nginx.conf.template
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+EXPOSE 80
 
-# پورت پیش‌فرض رایلی
-ENV PORT=3000
-
-CMD ["/app/start.sh"]
+CMD ["bash"]
