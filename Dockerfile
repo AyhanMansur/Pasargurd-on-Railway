@@ -18,7 +18,7 @@ RUN git clone https://github.com/PasarGuard/panel.git .
 # نصب پکیج‌های پایتون
 RUN pip install --no-cache-dir -r requirements.txt
 
-# اصلاح شده: مطابقت با نام فایل موجود در ریپازیتوری (nginix.conf.template)
+# کپی کردن کانفیگ با نام صحیح موجود در مخزن
 COPY nginix.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
