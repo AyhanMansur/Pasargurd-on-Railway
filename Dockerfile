@@ -18,8 +18,8 @@ RUN git clone https://github.com/PasarGuard/panel.git .
 # نصب پکیج‌های پایتون
 RUN pip install --no-cache-dir -r requirements.txt
 
-# کپی کردن کانفیگ Nginx و اسکریپت راه‌اندازی
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
+# اصلاح شده: مطابقت با نام فایل موجود در ریپازیتوری (nginix.conf.template)
+COPY nginix.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
